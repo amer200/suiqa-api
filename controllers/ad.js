@@ -41,12 +41,13 @@ exports.getAllAds = async(req, res) => {
                 maxPrice,
                 search,
                 locationText,
+                userId,
                 sortBy = 'createdAt',
                 order = 'desc'
         } = req.query;
 
         const filters = {};
-
+        if (userId) filters.user = userId;
         if (category) filters.category = category;
         if (subcategory) filters.subcategory = subcategory;
         if (condition) filters.condition = condition;
@@ -86,15 +87,6 @@ exports.getAllAds = async(req, res) => {
         console.error(err);
         res.status(500).json({ message: "حدث خطأ أثناء جلب الإعلانات" });
     }
-    // try {
-    //     const ads = await Ad.find().populate('category').populate('subcategory');
-    //     res.status(200).json({
-    //         ads: ads
-    //     })
-    // } catch (err) {
-    //     console.error(err);
-    //     res.status(500).json({ message: err.message });
-    // }
 };
 exports.getAdById = async(req, res) => {
     try {
@@ -155,6 +147,23 @@ exports.delleteAd = async(req, res) => {
         await Ad.findByIdAndDelete(id);
         res.status(200).json({
             message: "delleted"
+        })
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ message: err.message });
+    }
+}
+exports.getAdBySlug = async(req, res) => {
+    try {
+        const slug = req.params.slug;
+        const ad = await Ad.findOne({ slug: slug });
+        if (!ad) {
+            return res.status(404).json({
+                message: "not found !"
+            })
+        }
+        res.status(200).json({
+            ad: ad
         })
     } catch (err) {
         console.error(err);

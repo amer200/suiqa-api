@@ -10,4 +10,5 @@ router.get("/get-all-ads", adControllers.getAllAds);
 router.get("/get-ad-by-id/:id", adControllers.getAdById);
 router.post("/update-ad", authMiddlewares.isAuth, upload.array("images", 8), adControllers.updateAd);
 router.get("/dellet-ad/:id", authMiddlewares.isAuth, adControllers.delleteAd);
+router.get("/get-ad-by-slug/:slug", adControllers.getAdBySlug);
 module.exports = router;

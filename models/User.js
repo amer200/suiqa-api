@@ -23,6 +23,7 @@ const userSchema = new mongoose.Schema({
         enum: ["buyer", "seller", "admin"],
         default: "buyer"
     },
+    savedAds: [{ type: mongoose.Schema.Types.ObjectId, ref: "Ad" }]
 }, { timestamps: true });
 userSchema.pre('save', async function(next) {
     if (!this.isModified('password')) {

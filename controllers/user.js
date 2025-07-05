@@ -44,3 +44,40 @@ exports.loginUser = async(req, res) => {
         res.status(500).json({ message: err.message })
     }
 }
+exports.addSavedAd = async(req, res) => {
+    try {
+        const adId = req.body.adId;
+        const userId = req.user.id;
+        const user = await User.findById(userId);
+        user.savedAds.push(adId)
+        await user.save()
+        res.status(200).json({
+            savedAd: user.savedAds
+        })
+    } catch (err) {
+        res.status(500).json({ message: err.message })
+    }
+}
+exports.getAllSavedAd = async(req, res) => {
+    try {
+        const userId = req.user.id;
+        const user = await User.findById(userId).populate('savedAds');
+        res.status(200).json({
+            ads: user.savedAds
+        })
+    } catch (err) {
+        res.status(500).json({ message: err.message })
+    }
+}
+exports.removeAdFromSaved = async(req, res) => {
+    try {
+        const userId = req.user.id;
+        const adId = req.body.adId;
+        const user = await User.findByIdAndUpdate(userId, { $pull: { savedAds: adId } }, { new: true });
+        res.status(200).json({
+            message: "delleted"
+        })
+    } catch (err) {
+        res.status(500).json({ message: err.message })
+    }
+}
