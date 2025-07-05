@@ -31,14 +31,67 @@ exports.createAd = async(req, res) => {
 };
 exports.getAllAds = async(req, res) => {
     try {
-        const ads = await Ad.find().populate('category').populate('subcategory');
-        res.status(200).json({
-            ads: ads
-        })
+        const {
+            page = 1,
+                limit = 10,
+                category,
+                subcategory,
+                condition,
+                minPrice,
+                maxPrice,
+                search,
+                sortBy = 'createdAt',
+                order = 'desc'
+        } = req.query;
+
+        const filters = {};
+
+        if (category) filters.category = category;
+        if (subcategory) filters.subcategory = subcategory;
+        if (condition) filters.condition = condition;
+        if (minPrice || maxPrice) {
+            filters.price = {};
+            if (minPrice) filters.price.$gte = Number(minPrice);
+            if (maxPrice) filters.price.$lte = Number(maxPrice);
+        }
+
+        if (search) {
+            filters.$or = [
+                { title: { $regex: search, $options: 'i' } },
+                { description: { $regex: search, $options: 'i' } }
+            ];
+        }
+
+        const ads = await Ad.find(filters)
+            .sort({
+                [sortBy]: order === 'asc' ? 1 : -1
+            })
+            .skip((page - 1) * limit)
+            .limit(Number(limit))
+            .populate("category subcategory");
+
+        const total = await Ad.countDocuments(filters);
+
+        res.json({
+            data: ads,
+            total,
+            page: Number(page),
+            pages: Math.ceil(total / limit),
+        });
+
     } catch (err) {
         console.error(err);
-        res.status(500).json({ message: err.message });
+        res.status(500).json({ message: "حدث خطأ أثناء جلب الإعلانات" });
     }
+    // try {
+    //     const ads = await Ad.find().populate('category').populate('subcategory');
+    //     res.status(200).json({
+    //         ads: ads
+    //     })
+    // } catch (err) {
+    //     console.error(err);
+    //     res.status(500).json({ message: err.message });
+    // }
 };
 exports.getAdById = async(req, res) => {
     try {
