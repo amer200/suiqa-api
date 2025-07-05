@@ -40,6 +40,7 @@ exports.getAllAds = async(req, res) => {
                 minPrice,
                 maxPrice,
                 search,
+                locationText,
                 sortBy = 'createdAt',
                 order = 'desc'
         } = req.query;
@@ -54,7 +55,9 @@ exports.getAllAds = async(req, res) => {
             if (minPrice) filters.price.$gte = Number(minPrice);
             if (maxPrice) filters.price.$lte = Number(maxPrice);
         }
-
+        if (locationText) {
+            filters.locationText = { $regex: req.query.locationText, $options: 'i' };
+        }
         if (search) {
             filters.$or = [
                 { title: { $regex: search, $options: 'i' } },
