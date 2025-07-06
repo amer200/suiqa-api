@@ -18,6 +18,7 @@ app.use('/api/users', require('./routes/user.routes'));
 app.use('/api/ads', require('./routes/ad.routes'));
 app.use('/api/admins', require('./routes/admin.routes'));
 app.use('/api/categ', require('./routes/categ.routes'));
+app.use('/api/comments', require('./routes/comment.routes'));
 // // Error Handler (لو هتستخدم)
 // const errorHandler = require('./middlewares/errorHandler');
 // app.use(errorHandler);
