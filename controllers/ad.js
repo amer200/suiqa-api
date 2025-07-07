@@ -170,3 +170,15 @@ exports.getAdBySlug = async(req, res) => {
         res.status(500).json({ message: err.message });
     }
 }
+exports.getUserAds = async(req, res) => {
+    try {
+        const userId = req.user.id;
+        const ads = await Ad.find({ user: userId });
+        res.status(200).json({
+            ads: ads
+        })
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ message: err.message });
+    }
+}
