@@ -1,8 +1,8 @@
 const User = require("../models/User");
 const jwt = require('jsonwebtoken');
 
-const genrateToken = (id, name, email, role) => {
-    return jwt.sign({ id, name, email, role }, process.env.JWT_SECRET, { expiresIn: '30d' })
+const genrateToken = (id, name, email, role, isblockedbyadmin) => {
+    return jwt.sign({ id, name, email, role, isblockedbyadmin }, process.env.JWT_SECRET, { expiresIn: '30d' })
 }
 
 exports.registerUser = async(req, res) => {
@@ -35,7 +35,8 @@ exports.loginUser = async(req, res) => {
                 name: user.name,
                 email: user.email,
                 role: user.role,
-                token: genrateToken(user._id, user.name, user.email, user.role)
+                isBlockedByAdmin: user.isblockedbyadmin,
+                token: genrateToken(user._id, user.name, user.email, user.role, user.isblockedbyadmin)
             })
         } else {
             res.status(401).json({ message: "البريد الالكتروني او كلمة المرور خطاء!" })

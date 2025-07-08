@@ -1,10 +1,17 @@
 const Chat = require("../models/Chat");
 const Message = require("../models/Message");
+const Ad = require('../models/Ad');
 exports.startChat = async(req, res) => {
     const { adId } = req.body;
     const userId = req.user.id;
-
+    const ad = await Ad.findById(adId).populate('user');
+    const recever = ad.user;
     try {
+        if (recever.isblockedbyadmin) {
+            return res.status(403).json({
+                message: "هذا المستخدم محظور لا يمكنه استلام رسالتك الان"
+            })
+        }
         let chat = await Chat.findOne({
             ad: adId,
             participants: { $all: [userId] },
@@ -25,7 +32,6 @@ exports.startChat = async(req, res) => {
 exports.sendMessage = async(req, res) => {
     const { chatId, content } = req.body;
     const sender = req.user.id;
-
     try {
         const newMessage = await Message.create({
             chat: chatId,

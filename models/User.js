@@ -23,6 +23,10 @@ const userSchema = new mongoose.Schema({
         enum: ["buyer", "seller", "admin"],
         default: "buyer"
     },
+    isblockedbyadmin: {
+        type: Boolean,
+        default: false
+    },
     savedAds: [{ type: mongoose.Schema.Types.ObjectId, ref: "Ad" }]
 }, { timestamps: true });
 userSchema.pre('save', async function(next) {
