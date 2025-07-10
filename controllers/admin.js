@@ -1,5 +1,6 @@
 const Admin = require("../models/Admin");
 const User = require("../models/User");
+const Ad = require('../models/Ad');
 const jwt = require('jsonwebtoken');
 const genrateToken = (id, username, role) => {
     return jwt.sign({ id, username, role }, process.env.JWT_SECRET, { expiresIn: '30d' })
@@ -43,6 +44,29 @@ exports.toggleBlockUser = async(req, res) => {
         await user.save();
         res.status(200).json({
             user: user
+        })
+    } catch (err) {
+        res.status(500).json({ message: err.message })
+    }
+}
+exports.toggleBlockAd = async(req, res) => {
+    try {
+        const adId = req.params.adId;
+        const ad = await Ad.findById(adId);
+        ad.isblockedbyadmin = !ad.isblockedbyadmin;
+        await ad.save();
+        res.status(200).json({
+            ad: ad
+        })
+    } catch (err) {
+        res.status(500).json({ message: err.message })
+    }
+}
+exports.getBlockedAds = async(req, res) => {
+    try {
+        const ads = await Ad.find({ isblockedbyadmin: true });
+        res.status(200).json({
+            ads: ads
         })
     } catch (err) {
         res.status(500).json({ message: err.message })

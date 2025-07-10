@@ -1,5 +1,6 @@
 const Comment = require("../models/Comment");
 const { isCommentClean } = require("../utils/commentFilter");
+const adUtils = require("../utils/ad");
 exports.createComment = async(req, res) => {
     try {
         const { content, adId } = req.body;
@@ -7,6 +8,11 @@ exports.createComment = async(req, res) => {
         if (!isCommentClean(content)) {
             return res.status(400).json({
                 message: "التعليق يحتوي على الفاظ غير لائقة"
+            })
+        }
+        if (adUtils.isAdBlockedByAdmin(ad)) {
+            return res.status(403).json({
+                message: "هذا الاعلان محظور"
             })
         }
         const comment = await Comment.create({

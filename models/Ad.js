@@ -18,6 +18,10 @@ const adSchema = new mongoose.Schema({
     phone: { type: String, required: true },
     whatsapp: { type: String },
     user: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
+    isblockedbyadmin: {
+        type: Boolean,
+        default: false
+    }
 }, {
     timestamps: true
 });

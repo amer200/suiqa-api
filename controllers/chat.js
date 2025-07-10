@@ -1,11 +1,18 @@
 const Chat = require("../models/Chat");
 const Message = require("../models/Message");
 const Ad = require('../models/Ad');
+const adUtils = require("../utils/ad");
 exports.startChat = async(req, res) => {
     const { adId } = req.body;
     const userId = req.user.id;
     const ad = await Ad.findById(adId).populate('user');
     const recever = ad.user;
+
+    if (adUtils.isAdBlockedByAdmin(ad)) {
+        return res.status(403).json({
+            message: "هذا الاعلان  محظور لا يمكنه استلام رسالتك الان"
+        })
+    }
     try {
         if (recever.isblockedbyadmin) {
             return res.status(403).json({
